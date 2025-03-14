@@ -1,0 +1,36 @@
+body{
+  margin: 0;
+  background-color: #282c34;
+}
+
+#root{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+button {
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+
+button:hover {
+  background-color: #0056b3 !important;
+  transition: background-color 0.2s;
+}
+
+button:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+}
+
+
+@font-face {
+  font-family: "Silkscreen";
+  src: url(fonts/slkscr.ttf);
+}
