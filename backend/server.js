@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const Sudoku = require('./SudokuModel');
+const User = require('./UserModel'); 
+
+module.exports = User;
 
 const PORT = process.env.PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/CSCI3100project";
@@ -93,6 +96,74 @@ app.get("/api/sudoku/:difficulty", async (req, res) => {
       status: "error",
       message: "Server error",
       error: error.message 
+    });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ 
+        status: "error",
+        message: "User not found"
+      });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ 
+        status: "error",
+        message: "Invalid password"
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: "Login successful",
+      user: {
+        email: user.email,
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ 
+      status: "error",
+      message: "Server error",
+      error: error.message 
+    });
+  }
+});
+
+app.post("/api/signup", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = new User({ email, password });
+    await user.save();
+
+    res.json({
+      status: "success",
+      message: "Signup successful",
+      user: {
+        email: user.email,
+        password: user.password
+      }
+    });
+  } catch (error) {
+    if (error.code === 11000) { // Duplicate key error code
+      return res.status(400).json({
+      status: "error",
+      message: "Email already in use. Please use a different email."
+      });
+    }
+
+    res.status(500).json({
+      status: "error",
+      message: "Server error",
+      error: error.message
     });
   }
 });
