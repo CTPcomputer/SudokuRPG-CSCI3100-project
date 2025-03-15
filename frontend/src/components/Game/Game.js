@@ -200,7 +200,7 @@ const Game = () => {
     };
   }, []);
 
-  window.onbeforeunload = function () {navigate('/');}
+  window.onbeforeunload = function () {navigate('/home');}
 
   const handleSudokuComplete = (won) => {
     setShowSudoku(false);
