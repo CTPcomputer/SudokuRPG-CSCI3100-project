@@ -1,9 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import DbTest from '../Db/DbTest';
 
 const HomePage = () => {
 const navigate = useNavigate();
+
+  useEffect(() => {
+    let currentuser = localStorage.getItem('user');
+    if (currentuser === null) {
+      navigate('/login');
+    }
+  }, []);
 
 return (
 <div style={{
@@ -116,6 +123,36 @@ Sudoku RPG Adventure
       }}
     >
       Settings
+    </button>
+
+    <button
+      onClick={() => {
+        // Perform logout logic here
+        localStorage.removeItem('user');
+        navigate('/login');
+      }}
+      style={{
+        padding: 'clamp(10px, 3vw, 20px) clamp(20px, 5vw, 40px)',
+        fontSize: 'clamp(1rem, 3vw, 1.5rem)',
+        background: '#306230', // Button background
+        color: '#00ff00',
+        border: '2px solid #00ff00',
+        borderRadius: '0',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        boxShadow: '0 4px 0 #0f380f',
+        fontFamily: "'Press Start 2P', cursive",
+      }}
+      onMouseOver={e => {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = '0 6px 0 #006600';
+      }}
+      onMouseOut={e => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 4px 0 #006600';
+      }}
+    >
+      Logout
     </button>
   </div>
 

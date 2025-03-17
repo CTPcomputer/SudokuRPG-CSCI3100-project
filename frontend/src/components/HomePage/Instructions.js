@@ -1,8 +1,14 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Instructions = () => {
   const navigate = useNavigate();
+    useEffect(() => {
+      let currentuser = localStorage.getItem('user');
+      if (currentuser === null) {
+        navigate('/login');
+      }
+    }, []);
 
   return (
     <div style={{
@@ -51,7 +57,7 @@ const Instructions = () => {
         </div>
 
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           style={{
             padding: '15px 30px',
             fontSize: '1.2rem',
