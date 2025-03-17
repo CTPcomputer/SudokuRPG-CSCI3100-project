@@ -18,6 +18,13 @@ const Game = () => {
   const stagenum = useRef(1);
 
   useEffect(() => {
+    let currentuser = localStorage.getItem('user');
+    if (currentuser === null) {
+      navigate('/login');
+    }
+  }, []);
+
+  useEffect(() => {
     const BASE_WIDTH = 160;
     const BASE_HEIGHT = 144;
     const WALL_THICKNESS = 8;
@@ -257,6 +264,13 @@ const Game = () => {
         tabIndex={0}
         style={{ imageRendering: 'pixelated' }}
       />
+      <div id="sudokuDialog" className="dialog-overlay">
+       <div className="dialog-box">
+      <p id="dialogue">Challenge the enemy to a Sudoku game?</p>
+      <button className="yes" id="yesButton">Yes</button>
+      <button className="no" id="noButton">No</button>
+       </div>
+      </div>
       {showSudoku && (
         <div style={{
           position: 'absolute',
@@ -275,7 +289,7 @@ const Game = () => {
               position: 'absolute',
               top: '5%',
             }}>Test next stagae</button>
-            <SudokuGame onComplete={handleSudokuComplete} />
+            <SudokuGame onComplete={handleSudokuComplete} stage={stagenum.current}/>
           </div>
         </div>
       )}

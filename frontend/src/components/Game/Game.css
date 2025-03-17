@@ -21,3 +21,70 @@
     border: 1px solid #000000;
     border-radius: 10px;
 }
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .dialog-box {
+      background: white;
+      position: absolute;
+      padding: 20px;
+      bottom: 10px;
+      border-width: 5px;
+      border-style: solid;
+      max-width: 800px;
+      height: 200px;
+      width: 100%;
+    }
+
+    .dialog-box p {
+      margin: 0 0 20px;
+      font-size: 18px;
+      font-Family: 'Silkscreen'
+    }
+
+    .dialog-box button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      display: none;
+
+    }
+
+    .dialog-box button.yes {
+      background: #023020;
+      color: white;
+      align-content: right;
+      font-Family: 'Silkscreen';
+      position: absolute;
+      right: 100px;
+      bottom: 10px;
+    }
+
+    .dialog-box button.yes:hover {
+      background: #00FF00;
+    }
+
+    .dialog-box button.no {
+      background: #900C3F ;
+      color: white;
+      font-Family: 'Silkscreen';
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+    }
+
+    .dialog-box button.no:hover {
+      background: #FF0000;
+    }

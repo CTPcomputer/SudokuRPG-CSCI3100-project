@@ -20,6 +20,8 @@ const Login = () => {
           alert(data.message);
         } else {
           alert(data.message);
+          console.log('Data:', data.user);
+          localStorage.setItem('user', JSON.stringify(data.user));
           navigate('/home');
         }
       })
