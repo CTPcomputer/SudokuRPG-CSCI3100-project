@@ -10,6 +10,8 @@ const navigate = useNavigate();
     if (currentuser === null) {
       navigate('/login');
     }
+    console.log('User:', currentuser);
+    console.log('Email', JSON.parse(currentuser).email);
   }, []);
 
 return (
@@ -30,6 +32,7 @@ return (
    }}>
      <h1 style={{
        fontSize: 'clamp(2rem, 8vw, 4rem)',
+       paddingTop: '1rem',
        marginBottom: '2rem',
        color: '#00ff00',
        textShadow: '2px 2px 0 #8bac0f, -2px -2px 0 #8bac0f, 2px -2px 0 #8bac0f, -2px 2px 0 #8bac0f',
@@ -123,6 +126,33 @@ Sudoku RPG Adventure
       }}
     >
       Settings
+    </button>
+
+
+    <button
+      onClick={() => navigate('/leaderboard')}
+      style={{
+        padding: 'clamp(10px, 3vw, 20px) clamp(20px, 5vw, 40px)',
+        fontSize: 'clamp(1rem, 3vw, 1.5rem)',
+        background: '#306230', // Button background
+        color: '#00ff00',
+        border: '2px solid #00ff00',
+        borderRadius: '0',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        boxShadow: '0 4px 0 #0f380f',
+        fontFamily: "'Press Start 2P', cursive",
+      }}
+      onMouseOver={e => {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = '0 6px 0 #006600';
+      }}
+      onMouseOut={e => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 4px 0 #006600';
+      }}
+    >
+      Leaderboard
     </button>
 
     <button

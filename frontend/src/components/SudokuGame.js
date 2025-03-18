@@ -9,7 +9,8 @@ const SudokuGame = ({ onComplete,stage }) => {
   const [message, setMessage] = useState('');
   const [invalidCells, setInvalidCells] = useState([]);
   const timeLeftList = [1800, 1200,900,600];
-  const [timeLeft, setTimeLeft] = useState(timeLeftList[stage-1]||1800);
+  const initialTime = timeLeftList[stage - 1] || 1800;
+  const [timeLeft, setTimeLeft] = useState(initialTime);
   const [difficulty, setDifficulty] = useState('easy'); // Default difficulty
 
   useEffect(() => {
@@ -45,6 +46,7 @@ const SudokuGame = ({ onComplete,stage }) => {
         setMessage('');
         setInvalidCells([]);
         setSelectedCell(null);
+        setTimeLeft(initialTime);
       } else {
         setMessage('Failed to load puzzle. Please try again.');
       }
@@ -56,7 +58,7 @@ const SudokuGame = ({ onComplete,stage }) => {
 
   const resetGame = () => {
     fetchPuzzle();
-    setTimeLeft(timeLeftList[stage-1]||1800); // Reset time to default or use settings value
+    setTimeLeft(initialTime);
   };
 
   const handleCellClick = (row, col) => {
@@ -123,11 +125,14 @@ const SudokuGame = ({ onComplete,stage }) => {
     return Array.from(invalid);
   };
 
+
   const handleBattleWin = () => {
     setMessage('Congratulations! You defeated the boss!');
     setGameStatus('solved');
+
+    const timeTaken = initialTime - timeLeft; // Calculate time taken for this stage
     if (onComplete) {
-      setTimeout(() => onComplete(true), 1500);
+      setTimeout(() => onComplete(true, timeTaken), 1500); // Pass timeTaken back
     }
   };
 
@@ -135,7 +140,7 @@ const SudokuGame = ({ onComplete,stage }) => {
     setMessage('Time\'s up! The boss defeated you!');
     setGameStatus('failed');
     if (onComplete) {
-      setTimeout(() => onComplete(false), 1500);
+      setTimeout(() => onComplete(false, 0), 1500); // 0 time on loss
     }
   };
 

@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 const Sudoku = require('./SudokuModel');
 const User = require('./UserModel'); 
+const RecordTime = require('./RecordTimeModel');
 
 module.exports = User;
 
@@ -167,6 +168,99 @@ app.post("/api/signup", async (req, res) => {
     });
   }
 });
+
+app.post("/api/record", async (req, res) => {
+  const { email, totalTime } = req.body;
+
+  try {
+    // Validate request body
+    if (!email || totalTime === undefined) {
+      return res.status(400).json({
+        status: "error",
+        message: "Missing required fields (email, totalTime)",
+      });
+    }
+
+    // Verify user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    // Check if a record exists for this user
+    const existingRecord = await RecordTime.findOne({ email });
+
+    if (existingRecord) {
+      // If the new total time is shorter, update the record
+      if (totalTime < existingRecord.totalTime) {
+        existingRecord.totalTime = totalTime;
+        existingRecord.createdAt = Date.now(); // Update timestamp
+        await existingRecord.save();
+
+        return res.json({
+          status: "success",
+          message: "Total time updated with shorter time",
+          data: existingRecord,
+        });
+      } else {
+        // If the new total time is not shorter, return without updating
+        return res.json({
+          status: "success",
+          message: "Existing total time is shorter; no update made",
+          data: existingRecord,
+        });
+      }
+    } else {
+      // If no record exists, create a new one
+      const record = new RecordTime({
+        email,
+        totalTime,
+      });
+      await record.save();
+
+      return res.json({
+        status: "success",
+        message: "New total completion time recorded",
+        data: record,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "Server error",
+      error: error.message,
+    });
+  }
+});
+
+// Endpoint to get rankings (total time per user)
+app.get("/api/rankings", async (req, res) => {
+  try {
+    const rankings = await RecordTime.find()
+      .sort({ totalTime: 1 }) // Sort by total time ascending
+      .limit(50); // Optional: Limit to top 50 users
+
+    res.json({
+      status: "success",
+      data: rankings.map(record => ({
+        email: record.email,
+        totalTime: record.totalTime,
+      })),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "Server error",
+      error: error.message,
+    });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

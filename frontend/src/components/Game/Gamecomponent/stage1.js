@@ -33,13 +33,13 @@ export const defineStage1Scene = (k, setShowSudoku, BASE_WIDTH, BASE_HEIGHT, pla
     });
 
     // Add score display
-    k.add([k.text(score), k.pos(4, 4), k.scale(1), k.layer("ui")]);
+    k.add([k.text(score), k.pos(4, 4), k.scale(0.5), k.layer("ui")]);
 
     // Add enemy
     const enemy = k.add([
       k.sprite("enemy", { anim: "idle" }),
       k.scale(3),
-      k.area({ scale: 0.3 }),
+      k.area({ scale: 1 }),
       k.pos(WIDTH / 2, 20),
       k.body({ isStatic: true }),
       k.anchor("center"),
@@ -52,6 +52,7 @@ export const defineStage1Scene = (k, setShowSudoku, BASE_WIDTH, BASE_HEIGHT, pla
 
     // Get the dialog elements
     const dialogOverlay = document.getElementById("sudokuDialog");
+    const dialogbox = document.getElementById("dialogbox");
     const yesButton = document.getElementById("yesButton");
     const noButton = document.getElementById("noButton");
     const gamecanvas = document.getElementById("gameCanvas");
@@ -113,6 +114,12 @@ export const defineStage1Scene = (k, setShowSudoku, BASE_WIDTH, BASE_HEIGHT, pla
       nextDialogue();
       }
     });
+
+    dialogbox.addEventListener("click", (event) => {
+      nextDialogue();
+    });
+
+
 
     // Handle "Yes" button click
     yesButton.addEventListener("click", () => {
