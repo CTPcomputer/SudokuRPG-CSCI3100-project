@@ -221,6 +221,7 @@ const Game = () => {
   window.onbeforeunload = function () {navigate('/home');}
 
   const recordTotalTime = async () => {
+    console.log("Recording total time:", totalTime);
     const user = localStorage.getItem('user'); // Adjust based on your auth setup
     const email = user ? JSON.parse(user).email : null;
     if (!email) {
@@ -258,39 +259,28 @@ const Game = () => {
       setTotalTime(prev => prev + timeTaken); // Accumulate time taken for this stage
       const enemies = kRef.current.get("enemy");
       enemies.forEach(enemy => kRef.current.destroy(enemy));
-      stagenum.current += 1;
-      const stagelist = ["stage1", "stage2", "stage3", "stage4", "win"];
-      const currentIndex = stagelist.indexOf(kRef.current.getSceneName());
-      if (currentIndex === stagelist.length - 1) {
-        kRef.current.go("win");
-        recordTotalTime(); // Record total time when reaching the win scene
-      } else {
-        kRef.current.go(stagelist[currentIndex + 1], stagenum.current);
-      }
+      tonextstage();
     } else {
       alert("Sudoku failed!");
-      const player = kRef.current.get("player")[0];
-      if (player) player.hurt(1);
     }
-
-    if (canvasRef.current) canvasRef.current.focus();
   };
 
   const stagelist = ["stage1", "stage2", "stage3", "stage4", "win"];
   const tonextstage = () => {
-    const currentStage = kRef.current.getSceneName();
+    let currentStage = kRef.current.getSceneName();
     const currentIndex = stagelist.indexOf(currentStage);
-    if (currentIndex === stagelist.length - 1) {
-      kRef.current.go("win");
-      recordTotalTime(); // Record total time when testing the win scene
-    } else {
-      setShowSudoku(false);
-      if (canvasRef.current) {
-        canvasRef.current.focus();
-      }
+      setShowSudoku(false);      
       stagenum.current += 1;
-      kRef.current.go(stagelist[currentIndex + 1], stagenum.current);
-    }
+      let nextstage = stagelist[currentIndex + 1];
+      if (nextstage == "win") {
+        kRef.current.go("win");
+        recordTotalTime();
+      }
+      else{
+      kRef.current.go(nextstage, stagenum.current);
+      }
+      if (canvasRef.current) canvasRef.current.focus();
+
   };
 
   return (
@@ -338,7 +328,12 @@ const Game = () => {
 <div style={{ position: 'absolute', top: '10px', left: '10px', color: 'white' }}>
           Total Time: {Math.floor(totalTime / 60)}:{(totalTime % 60).toString().padStart(2, '0')}
         </div>
-          <div style={{ background: '#fff', padding: '10px' }}>
+          <div style={{
+            position: 'relative',
+            height: '100%',
+            borderRadius: '10px',
+            overflow: 'hidden',
+          }}>
           <button onClick={tonextstage} style={{
               position: 'absolute',
               top: '5%',
