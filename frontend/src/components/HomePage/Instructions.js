@@ -40,7 +40,7 @@ const Instructions = () => {
           <h2 style={{ color: '#00ff00', marginBottom: '15px' }}>Controls</h2>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li style={{ marginBottom: '10px' }}>1. Use arrow keys to move your character</li>
-            <li style={{ marginBottom: '10px' }}>2. Approach boss characters to initiate battles</li>
+            <li style={{ marginBottom: '10px' }}>2. Approach boss characters to initiate battles, click with mouse or press enter to continue the talk.</li>
             <li style={{ marginBottom: '10px' }}>3. Click cells and use number buttons to fill the Sudoku grid</li>
             <li style={{ marginBottom: '10px' }}>4. Complete the Sudoku puzzle within the time limit to win</li>
           </ul>

@@ -10,8 +10,10 @@ const navigate = useNavigate();
     if (currentuser === null) {
       navigate('/login');
     }
+    else {
     console.log('User:', currentuser);
     console.log('Email', JSON.parse(currentuser).email);
+    }
   }, []);
 
 return (
@@ -20,7 +22,7 @@ return (
      flexDirection: 'column',
      alignItems: 'center',
      justifyContent: 'center',
-     height: '100vh',
+     height: '100%',
      width: '100vw',
      padding: '20px',
      background: '#0f380f', // Game Boy Color background
@@ -28,7 +30,8 @@ return (
      boxSizing: 'border-box',
      margin: 0,
      overflow: 'hidden',
-     fontFamily: "'Press Start 2P', cursive" // Game Boy style font
+     fontFamily: "'Press Start 2P', cursive", // Game Boy style font
+      overflowY: 'auto',
    }}>
      <h1 style={{
        fontSize: 'clamp(2rem, 8vw, 4rem)',
