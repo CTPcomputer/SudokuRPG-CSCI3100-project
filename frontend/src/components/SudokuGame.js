@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const SudokuGame = ({ onComplete }) => {
+const SudokuGame = ({ onComplete,stage }) => {
   const [board, setBoard] = useState(Array(9).fill().map(() => Array(9).fill(0)));
   const [initialBoard, setInitialBoard] = useState(Array(9).fill().map(() => Array(9).fill(0)));
   const [solution, setSolution] = useState(Array(9).fill().map(() => Array(9).fill(0)));
@@ -8,7 +8,9 @@ const SudokuGame = ({ onComplete }) => {
   const [gameStatus, setGameStatus] = useState('playing');
   const [message, setMessage] = useState('');
   const [invalidCells, setInvalidCells] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(300); // Default 5 minutes
+  const timeLeftList = [1800, 1200,900,600];
+  const initialTime = timeLeftList[stage - 1] || 1800;
+  const [timeLeft, setTimeLeft] = useState(initialTime);
   const [difficulty, setDifficulty] = useState('easy'); // Default difficulty
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const SudokuGame = ({ onComplete }) => {
         setMessage('');
         setInvalidCells([]);
         setSelectedCell(null);
+        setTimeLeft(initialTime);
       } else {
         setMessage('Failed to load puzzle. Please try again.');
       }
@@ -55,7 +58,7 @@ const SudokuGame = ({ onComplete }) => {
 
   const resetGame = () => {
     fetchPuzzle();
-    setTimeLeft(300); // Reset time to default or use settings value
+    setTimeLeft(initialTime);
   };
 
   const handleCellClick = (row, col) => {
@@ -122,11 +125,14 @@ const SudokuGame = ({ onComplete }) => {
     return Array.from(invalid);
   };
 
+
   const handleBattleWin = () => {
     setMessage('Congratulations! You defeated the boss!');
     setGameStatus('solved');
+
+    const timeTaken = initialTime - timeLeft; // Calculate time taken for this stage
     if (onComplete) {
-      setTimeout(() => onComplete(true), 1500);
+      setTimeout(() => onComplete(true, timeTaken), 1500); // Pass timeTaken back
     }
   };
 
@@ -134,7 +140,7 @@ const SudokuGame = ({ onComplete }) => {
     setMessage('Time\'s up! The boss defeated you!');
     setGameStatus('failed');
     if (onComplete) {
-      setTimeout(() => onComplete(false), 1500);
+      setTimeout(() => onComplete(false, 0), 1500); // 0 time on loss
     }
   };
 

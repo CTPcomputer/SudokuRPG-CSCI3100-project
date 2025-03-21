@@ -19,10 +19,7 @@ button:hover {
 }
 
 
-button:hover {
-  background-color: #0056b3 !important;
-  transition: background-color 0.2s;
-}
+
 
 button:disabled {
   background-color: #cccccc !important;

@@ -16,6 +16,14 @@ const Game = () => {
   const canvasRef = useRef(null);
   const k = useRef(null);
   const stagenum = useRef(1);
+  const [totalTime, setTotalTime] = useState(0);
+
+  useEffect(() => {
+    let currentuser = localStorage.getItem('user');
+    if (currentuser === null) {
+      navigate('/login');
+    }
+  }, []);
 
   useEffect(() => {
     const BASE_WIDTH = 160;
@@ -41,10 +49,28 @@ const Game = () => {
 
     // Load assets
     k.current.loadSprite("floor", "sprites/floor.png");
+    k.current.loadSprite("map1", "sprites/map1.png");
+    k.current.loadSprite("map2", "sprites/map2.png");
+    k.current.loadSprite("map3", "sprites/map3.png");
     k.current.loadSprite("enemy", "sprites/enemy1.png", {
       sliceX: 3,
       sliceY: 1,
       anims: { idle: { from: 0, to: 2, loop: true, duration: 100 } },
+    });
+    k.current.loadSprite("enemy2", "sprites/enemy2.png", {
+      sliceX: 2,
+      sliceY: 1,
+      anims: { idle: { from: 0, to: 1, loop: true, duration: 100 } },
+    });
+    k.current.loadSprite("enemy3", "sprites/enemy3.png", {
+      sliceX: 1,
+      sliceY: 1,
+      anims: { idle: { from: 0, to: 0, loop: true, duration: 100 } },
+    });
+    k.current.loadSprite("enemy4", "sprites/enemy4.png", {
+      sliceX: 2,
+      sliceY: 1,
+      anims: { idle: { from: 0, to: 1, loop: true, duration: 100 } },
     });
     k.current.loadSound("bg", "sounds/testbg.mp3");
     k.current.loadSprite("prototype", "sprites/Player.png", {
@@ -112,7 +138,7 @@ const Game = () => {
         } else if (k.current.isKeyDown("left")) {
           player.move(-diagonalSpeed, diagonalSpeed);
           player.play("walkdown");
-          player.flipX = true;
+          player.flipX = false;
           lastDirection = "left";
         } else {
           player.move(0, speed);
@@ -156,14 +182,6 @@ const Game = () => {
       }
     });
     
-    player.onKeyPress("h", () => {
-      player.hurt(1);
-    });
-    player.onHurt(() => k.current.debug.log("hurt"));
-    player.on("death", () => {
-      k.current.debug.log("death");
-      k.current.destroy(player);
-    });
     player.onKeyPress("space", () => k.current.debug.log(k.current.width()));
   
 
@@ -202,39 +220,68 @@ const Game = () => {
 
   window.onbeforeunload = function () {navigate('/home');}
 
-  const handleSudokuComplete = (won) => {
+  const recordTotalTime = async () => {
+    console.log("Recording total time:", totalTime);
+    const user = localStorage.getItem('user'); // Adjust based on your auth setup
+    const email = user ? JSON.parse(user).email : null;
+    if (!email) {
+      console.error('No user email found');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/api/record', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          totalTime,
+        }),
+      });
+      const result = await response.json();
+      if (result.status !== 'success') {
+        console.error('Failed to record total time:', result.message);
+      } else {
+        console.log(result.message);
+      }
+    } catch (error) {
+      console.error('Error recording total time:', error);
+    }
+  };
+
+  const handleSudokuComplete = (won, timeTaken) => {
     setShowSudoku(false);
     if (!kRef.current) return;
 
     if (won) {
+      setTotalTime(prev => prev + timeTaken); // Accumulate time taken for this stage
       const enemies = kRef.current.get("enemy");
       enemies.forEach(enemy => kRef.current.destroy(enemy));
-      kRef.current.go("win");
+      tonextstage();
     } else {
       alert("Sudoku failed!");
-      const player = kRef.current.get("player")[0];
-      if (player) player.hurt(1);
     }
-
-    if (canvasRef.current) canvasRef.current.focus();
   };
 
   const stagelist = ["stage1", "stage2", "stage3", "stage4", "win"];
   const tonextstage = () => {
-    const currentStage = kRef.current.getSceneName();
-    console.log(currentStage);
+    let currentStage = kRef.current.getSceneName();
     const currentIndex = stagelist.indexOf(currentStage);
-    if (currentIndex === stagelist.length - 1) {
-      kRef.current.go("win");
-    } else {
-      setShowSudoku(false);
-      if (canvasRef.current) {
-        canvasRef.current.focus();
-    }
+      setShowSudoku(false);      
       stagenum.current += 1;
-      kRef.current.go(stagelist[currentIndex + 1], stagenum.current);
-    }
-  }
+      let nextstage = stagelist[currentIndex + 1];
+      if (nextstage == "win") {
+        kRef.current.go("win");
+        recordTotalTime();
+      }
+      else{
+      kRef.current.go(nextstage, stagenum.current);
+      }
+      if (canvasRef.current) canvasRef.current.focus();
+
+  };
 
   return (
     <div className="game-container" style={{
@@ -257,6 +304,13 @@ const Game = () => {
         tabIndex={0}
         style={{ imageRendering: 'pixelated' }}
       />
+      <div id="sudokuDialog" className="dialog-overlay">
+       <div id="dialogbox" className="dialog-box">
+      <p id="dialogue">Challenge the enemy to a Sudoku game?</p>
+      <button className="yes" id="yesButton">Yes</button>
+      <button className="no" id="noButton">No</button>
+       </div>
+      </div>
       {showSudoku && (
         <div style={{
           position: 'absolute',
@@ -270,12 +324,21 @@ const Game = () => {
           alignItems: 'center',
           zIndex: 10,
         }}>
-          <div style={{ background: '#fff', padding: '10px' }}>
+
+<div style={{ position: 'absolute', top: '10px', left: '10px', color: 'white' }}>
+          Total Time: {Math.floor(totalTime / 60)}:{(totalTime % 60).toString().padStart(2, '0')}
+        </div>
+          <div style={{
+            position: 'relative',
+            height: '100%',
+            borderRadius: '10px',
+            overflow: 'hidden',
+          }}>
           <button onClick={tonextstage} style={{
               position: 'absolute',
               top: '5%',
-            }}>Test next stagae</button>
-            <SudokuGame onComplete={handleSudokuComplete} />
+            }}>Test next stage</button>
+            <SudokuGame onComplete={handleSudokuComplete} stage={stagenum.current}/>
           </div>
         </div>
       )}

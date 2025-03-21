@@ -19,6 +19,13 @@ const Settings = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [timeLimit, setTimeLimit] = useState(300);
 
+    useEffect(() => {
+      let currentuser = localStorage.getItem('user');
+      if (currentuser === null) {
+        navigate('/login');
+      }
+    }, []);
+
   // Set fullscreen background color on mount
   useEffect(() => {
     document.body.style.backgroundColor = colors.fullscreenBackground;
@@ -102,7 +109,7 @@ const Settings = () => {
 
       <div style={{ display: 'flex', gap: '15px' }}>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           style={{
             padding: '15px 30px',
             fontSize: '1.2rem',
@@ -122,7 +129,7 @@ const Settings = () => {
         </button>
 
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           style={{
             padding: '15px 30px',
             fontSize: '1.2rem',
