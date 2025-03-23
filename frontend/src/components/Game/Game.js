@@ -8,6 +8,7 @@ import { defineStage3Scene } from './Gamecomponent/stage3';
 import { defineStage4Scene } from './Gamecomponent/stage4';
 import { defineWinScene } from './Gamecomponent/win'; // Import the win scene
 import {useNavigate} from 'react-router-dom';
+import { set } from 'mongoose';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -15,13 +16,22 @@ const Game = () => {
   const kRef = useRef(null);
   const canvasRef = useRef(null);
   const k = useRef(null);
+  const videoRef = useRef(null)
   const stagenum = useRef(1);
   const [totalTime, setTotalTime] = useState(0);
+  const [showVideo, setShowVideo] = useState(true); // Renamed for consistency
+  const [videoSource, setVideoSource] = useState("videos/open.mp4")
 
   useEffect(() => {
     let currentuser = localStorage.getItem('user');
     if (currentuser === null) {
       navigate('/login');
+    }
+    if (videoRef.current) {
+      videoRef.current.onended = () => {
+        setShowVideo(false);
+        if (canvasRef.current) canvasRef.current.focus();
+      };
     }
   }, []);
 
@@ -261,7 +271,8 @@ const Game = () => {
       enemies.forEach(enemy => kRef.current.destroy(enemy));
       tonextstage();
     } else {
-      alert("Sudoku failed!");
+      setVideoSource("videos/lose.mp4")
+      setShowVideo(true)
     }
   };
 
@@ -272,9 +283,16 @@ const Game = () => {
       setShowSudoku(false);      
       stagenum.current += 1;
       let nextstage = stagelist[currentIndex + 1];
-      if (nextstage == "win") {
+      if (nextstage === "win") {
         kRef.current.go("win");
-        recordTotalTime();
+        setShowVideo(true);
+        if (localStorage.getItem('cheat')==='false'){
+          setVideoSource("videos/true.mp4");
+          recordTotalTime();
+        }
+        else{
+          setVideoSource("videos/cheat.mp4");
+        }
       }
       else{
       kRef.current.go(nextstage, stagenum.current);
@@ -282,6 +300,37 @@ const Game = () => {
       if (canvasRef.current) canvasRef.current.focus();
 
   };
+
+
+// Handle video playback and navigation
+useEffect(() => {
+  if (showVideo && videoRef.current) {
+    videoRef.current.load();
+    videoRef.current.play().catch(error => {
+      console.error("Video playback failed:", error);
+    });
+    videoRef.current.onended = () => {
+      setShowVideo(false);
+      if (videoSource === "videos/lose.mp4") {
+        navigate('/home'); // Navigate to /home when lose video ends
+      } else {
+        if (canvasRef.current) canvasRef.current.focus();
+      }
+    };
+  }
+}, [showVideo, videoSource, navigate]);
+
+const handleSkipVideo = () => {
+  if (videoRef.current) {
+    videoRef.current.pause(); // Prevent AbortError
+  }
+  setShowVideo(false);
+  if (videoSource === "videos/lose.mp4") {
+    navigate('/home'); // Navigate to /home when skipping lose video
+  } else {
+    if (canvasRef.current) canvasRef.current.focus();
+  }
+};
 
   return (
     <div className="game-container" style={{
@@ -296,6 +345,56 @@ const Game = () => {
       justifyContent: 'center',
       alignItems: 'center',
     }}>
+      {showVideo &&
+      <div
+        style={{
+          position: 'absolute',
+          width: "100%",
+          height: "100%",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 0,
+          background: 'black',
+        }}>
+        <video
+            ref={videoRef}
+            autoPlay
+            style={{
+              width: 800,
+              height: 600,
+              justifySelf: 'center',
+              alignSelf: 'center',
+            }}
+          >
+            <source src={videoSource} type="video/mp4" />
+          </video>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 10,
+          right: 10,
+          color: 'white',
+        }}>
+        <button 
+                style={{
+                  fontFamily: "'Press Start 2P', cursive",
+                  fontSize: '1rem',
+                  padding: '10px',
+                  background: '#306230',
+                  color: '#00ff00',
+                  border: '2px solid #00ff00',
+                  borderRadius: '0',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 4px 0 #0f380f',
+                  width: '100px',
+                }}
+                onClick={handleSkipVideo}
+        >Skip</button>
+      </div>
+      </div>
+    }
       <canvas
         id="gameCanvas"
         width={800}

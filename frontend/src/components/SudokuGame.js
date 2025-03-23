@@ -165,8 +165,9 @@ const SudokuGame = ({ onComplete,stage }) => {
   const showSolution = () => {
     setBoard(JSON.parse(JSON.stringify(solution)));
     setGameStatus('solved');
-    handleBattleLoss();
     setMessage('Here is the solution!');
+    localStorage.setItem('cheat', 'true');
+    handleBattleWin();
   };
 
   const clearCell = () => {
@@ -196,6 +197,10 @@ const SudokuGame = ({ onComplete,stage }) => {
       alignItems: 'center',
       overflow: 'hidden'
     }}>
+      <button
+      onClick={handleBattleLoss}>
+        <p>test lose</p>
+      </button>
       <div style={{ 
         color: 'white', 
         fontSize: '24px', 
@@ -289,7 +294,7 @@ const SudokuGame = ({ onComplete,stage }) => {
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
         {message && (
           <div style={{ 
-            color: message.includes('Congratulations') ? 'green' : message.includes('conflicts') ? 'red' : 'black',
+            color: message.includes('Congratulations') ? 'green' : message.includes('conflicts') ? 'red' : 'white',
             marginBottom: '10px',
             fontWeight: 'bold',
             fontFamily: 'Silkscreen',
