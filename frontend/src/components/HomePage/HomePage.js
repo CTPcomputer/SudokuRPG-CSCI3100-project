@@ -14,6 +14,7 @@ const navigate = useNavigate();
     console.log('User:', currentuser);
     console.log('Email', JSON.parse(currentuser).email);
     }
+    localStorage.setItem('cheat', 'false');
   }, []);
 
 return (
@@ -54,7 +55,10 @@ Sudoku RPG Adventure
     maxWidth: '100%'
   }}>
     <button
-      onClick={() => navigate('/game')}
+      onClick={() => {
+        localStorage.setItem('cheat', 'false');
+        navigate('/game')
+      }}
       style={{
         padding: 'clamp(10px, 3vw, 20px) clamp(20px, 5vw, 40px)',
         fontSize: 'clamp(1rem, 3vw, 1.5rem)',

@@ -6,7 +6,7 @@ export const defineWinScene = (k, setShowSudoku) => {
   
     k.scene("win", () => {
       k.add([
-        k.text("You Won!", { size: 16 }),
+        k.text("Game Over!", { size: 16 }),
         k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2 - 20),
         k.anchor("center"),
         k.layer("ui"),
