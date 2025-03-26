@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import HomePage from './components/HomePage/HomePage';
 import LeaderBoard from './components/HomePage/LeaderBoard';
@@ -10,12 +10,13 @@ import Signup from './components/Authentication/Signup';
 
 
 function App() {
+  const rootPage = localStorage.getItem('user') === null ? <Login /> : <HomePage />;
   return (
     <BrowserRouter>
             <Routes>
+          <Route path="/" element={rootPage} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Login />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/game" element={<Game />} />
           <Route path="/leaderboard" element={<LeaderBoard />} />

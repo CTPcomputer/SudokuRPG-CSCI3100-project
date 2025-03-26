@@ -8,7 +8,6 @@ import { defineStage3Scene } from './Gamecomponent/stage3';
 import { defineStage4Scene } from './Gamecomponent/stage4';
 import { defineWinScene } from './Gamecomponent/win'; // Import the win scene
 import {useNavigate} from 'react-router-dom';
-import { set } from 'mongoose';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -21,6 +20,14 @@ const Game = () => {
   const [totalTime, setTotalTime] = useState(0);
   const [showVideo, setShowVideo] = useState(true); // Renamed for consistency
   const [videoSource, setVideoSource] = useState("videos/open.mp4")
+  const [recordMessage, setRecordMessage] = useState("");
+  const bgMusicRef = useRef(null)
+
+  //disable player movement when video is playing
+  const showVideoRef = useRef(showVideo);
+  useEffect(() => {
+    showVideoRef.current = showVideo;
+  }, [showVideo]);
 
   useEffect(() => {
     let currentuser = localStorage.getItem('user');
@@ -120,7 +127,7 @@ const Game = () => {
       const speed = 50;
       const diagonalSpeed = speed / Math.sqrt(2);
       let isMoving = false;
-    
+      if (showVideoRef.current) return;
       if (k.current.isKeyDown("up")) {
         isMoving = true;
         if (k.current.isKeyDown("right")) {
@@ -201,12 +208,12 @@ const Game = () => {
     defineStage2Scene(k.current, setShowSudoku,BASE_WIDTH,BASE_HEIGHT,player);
     defineStage3Scene(k.current, setShowSudoku,BASE_WIDTH,BASE_HEIGHT,player); 
     defineStage4Scene(k.current, setShowSudoku,BASE_HEIGHT,BASE_HEIGHT,player);
-    defineWinScene(k.current, setShowSudoku); // Define "win" scene
+    defineWinScene(k.current, setShowSudoku,totalTime,recordMessage); // Define "win" scene
 
 
     // Start the game
     k.current.go("stage1", 1);
-    k.current.play("bg", { volume: 0.5, loop: true });
+    bgMusicRef.current = k.current.play("bg", { volume: 0.5, loop: true });
 
 
     const resizeCanvas = () => {
@@ -255,6 +262,7 @@ const Game = () => {
         console.error('Failed to record total time:', result.message);
       } else {
         console.log(result.message);
+        setRecordMessage(result.message)
       }
     } catch (error) {
       console.error('Error recording total time:', error);
@@ -301,6 +309,17 @@ const Game = () => {
 
   };
 
+
+  // Control music based on showVideo state
+  useEffect(() => {
+    if (bgMusicRef.current) {
+      if (showVideo) {
+        bgMusicRef.current.stop(); // Pause music when video plays
+      } else {
+        bgMusicRef.current.play(); // Resume music when video stops
+      }
+    }
+  }, [showVideo]);
 
 // Handle video playback and navigation
 useEffect(() => {
@@ -361,10 +380,8 @@ const handleSkipVideo = () => {
             ref={videoRef}
             autoPlay
             style={{
-              width: 800,
-              height: 600,
-              justifySelf: 'center',
-              alignSelf: 'center',
+              width: "95%",
+              height: "95%",
             }}
           >
             <source src={videoSource} type="video/mp4" />

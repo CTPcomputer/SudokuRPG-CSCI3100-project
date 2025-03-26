@@ -1,9 +1,9 @@
 
 // WinScene.js
-export const defineWinScene = (k, setShowSudoku) => {
+export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
     const BASE_WIDTH = 160;
     const BASE_HEIGHT = 144;
-  
+    
     k.scene("win", () => {
       k.add([
         k.text("Game Over!", { size: 16 }),
@@ -11,6 +11,28 @@ export const defineWinScene = (k, setShowSudoku) => {
         k.anchor("center"),
         k.layer("ui"),
       ]);
+
+      // Display current total time if "true" ending
+    const isTrueEnding = localStorage.getItem('cheat') === 'false';
+    if (isTrueEnding) {
+      const currentTimeText = `Total time: ${Math.floor(totalTime / 60)}:${(totalTime % 60).toString().padStart(2, '0')}`;
+      k.add([
+        k.text(currentTimeText, { size: 12 }),
+        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2),
+        k.anchor("center"),
+        k.layer("ui"),
+      ]);
+    }
+
+    // Display record message if available
+    if (recordMessage) {
+      k.add([
+        k.text(recordMessage, { size: 12 }),
+        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2+10),
+        k.anchor("center"),
+        k.layer("ui"),
+      ]);
+    }
   
       k.add([
         k.text("Press R to Replay", { size: 12 }),

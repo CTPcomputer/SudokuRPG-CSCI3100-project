@@ -4,7 +4,7 @@ export const defineStage2Scene = (k, setShowSudoku, BASE_WIDTH, BASE_HEIGHT,play
       const WIDTH = BASE_WIDTH;
       const HEIGHT = BASE_HEIGHT;
       const WALL_THICKNESS = 8;
-  
+      player.paused=false
       // Add background
       k.add([k.sprite("map1"), k.scale(1), k.pos(0, 0), k.layer("bg")]);
       k.add(player)
@@ -126,6 +126,7 @@ export const defineStage2Scene = (k, setShowSudoku, BASE_WIDTH, BASE_HEIGHT,play
     yesButton.addEventListener("click", () => {
       setShowSudoku(true); // Show Sudoku game
       hideDialog();
+      player.paused=true
     });
 
     // Handle "No" button click
