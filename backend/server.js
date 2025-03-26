@@ -202,14 +202,14 @@ app.post("/api/record", async (req, res) => {
 
         return res.json({
           status: "success",
-          message: "Total time updated with shorter time",
+          message: "New Best Record: " + existingRecord.totalTime,
           data: existingRecord,
         });
       } else {
         // If the new total time is not shorter, return without updating
         return res.json({
           status: "success",
-          message: "Existing total time is shorter; no update made",
+          message: "Best Record: " + existingRecord.totalTime,
           data: existingRecord,
         });
       }
