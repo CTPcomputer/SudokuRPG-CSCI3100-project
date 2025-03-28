@@ -15,13 +15,30 @@ const Game = () => {
   const kRef = useRef(null);
   const canvasRef = useRef(null);
   const k = useRef(null);
+  const videoRef = useRef(null)
   const stagenum = useRef(1);
   const [totalTime, setTotalTime] = useState(0);
+  const [showVideo, setShowVideo] = useState(true); // Renamed for consistency
+  const [videoSource, setVideoSource] = useState("videos/open.mp4")
+  const [recordMessage, setRecordMessage] = useState("");
+  const bgMusicRef = useRef(null)
+
+  //disable player movement when video is playing
+  const showVideoRef = useRef(showVideo);
+  useEffect(() => {
+    showVideoRef.current = showVideo;
+  }, [showVideo]);
 
   useEffect(() => {
     let currentuser = localStorage.getItem('user');
     if (currentuser === null) {
       navigate('/login');
+    }
+    if (videoRef.current) {
+      videoRef.current.onended = () => {
+        setShowVideo(false);
+        if (canvasRef.current) canvasRef.current.focus();
+      };
     }
   }, []);
 
@@ -110,7 +127,7 @@ const Game = () => {
       const speed = 50;
       const diagonalSpeed = speed / Math.sqrt(2);
       let isMoving = false;
-    
+      if (showVideoRef.current) return;
       if (k.current.isKeyDown("up")) {
         isMoving = true;
         if (k.current.isKeyDown("right")) {
@@ -191,12 +208,12 @@ const Game = () => {
     defineStage2Scene(k.current, setShowSudoku,BASE_WIDTH,BASE_HEIGHT,player);
     defineStage3Scene(k.current, setShowSudoku,BASE_WIDTH,BASE_HEIGHT,player); 
     defineStage4Scene(k.current, setShowSudoku,BASE_HEIGHT,BASE_HEIGHT,player);
-    defineWinScene(k.current, setShowSudoku); // Define "win" scene
+    defineWinScene(k.current, setShowSudoku,totalTime,recordMessage); // Define "win" scene
 
 
     // Start the game
     k.current.go("stage1", 1);
-    k.current.play("bg", { volume: 0.5, loop: true });
+    bgMusicRef.current = k.current.play("bg", { volume: 0.5, loop: true });
 
 
     const resizeCanvas = () => {
@@ -245,6 +262,7 @@ const Game = () => {
         console.error('Failed to record total time:', result.message);
       } else {
         console.log(result.message);
+        setRecordMessage(result.message)
       }
     } catch (error) {
       console.error('Error recording total time:', error);
@@ -261,7 +279,8 @@ const Game = () => {
       enemies.forEach(enemy => kRef.current.destroy(enemy));
       tonextstage();
     } else {
-      alert("Sudoku failed!");
+      setVideoSource("videos/lose.mp4")
+      setShowVideo(true)
     }
   };
 
@@ -272,9 +291,16 @@ const Game = () => {
       setShowSudoku(false);      
       stagenum.current += 1;
       let nextstage = stagelist[currentIndex + 1];
-      if (nextstage == "win") {
+      if (nextstage === "win") {
         kRef.current.go("win");
-        recordTotalTime();
+        setShowVideo(true);
+        if (localStorage.getItem('cheat')==='false'){
+          setVideoSource("videos/true.mp4");
+          recordTotalTime();
+        }
+        else{
+          setVideoSource("videos/cheat.mp4");
+        }
       }
       else{
       kRef.current.go(nextstage, stagenum.current);
@@ -282,6 +308,48 @@ const Game = () => {
       if (canvasRef.current) canvasRef.current.focus();
 
   };
+
+
+  // Control music based on showVideo state
+  useEffect(() => {
+    if (bgMusicRef.current) {
+      if (showVideo) {
+        bgMusicRef.current.stop(); // Pause music when video plays
+      } else {
+        bgMusicRef.current.play(); // Resume music when video stops
+      }
+    }
+  }, [showVideo]);
+
+// Handle video playback and navigation
+useEffect(() => {
+  if (showVideo && videoRef.current) {
+    videoRef.current.load();
+    videoRef.current.play().catch(error => {
+      console.error("Video playback failed:", error);
+    });
+    videoRef.current.onended = () => {
+      setShowVideo(false);
+      if (videoSource === "videos/lose.mp4") {
+        navigate('/home'); // Navigate to /home when lose video ends
+      } else {
+        if (canvasRef.current) canvasRef.current.focus();
+      }
+    };
+  }
+}, [showVideo, videoSource, navigate]);
+
+const handleSkipVideo = () => {
+  if (videoRef.current) {
+    videoRef.current.pause(); // Prevent AbortError
+  }
+  setShowVideo(false);
+  if (videoSource === "videos/lose.mp4") {
+    navigate('/home'); // Navigate to /home when skipping lose video
+  } else {
+    if (canvasRef.current) canvasRef.current.focus();
+  }
+};
 
   return (
     <div className="game-container" style={{
@@ -296,6 +364,54 @@ const Game = () => {
       justifyContent: 'center',
       alignItems: 'center',
     }}>
+      {showVideo &&
+      <div
+        style={{
+          position: 'absolute',
+          width: "100%",
+          height: "100%",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 0,
+          background: 'black',
+        }}>
+        <video
+            ref={videoRef}
+            autoPlay
+            style={{
+              width: "95%",
+              height: "95%",
+            }}
+          >
+            <source src={videoSource} type="video/mp4" />
+          </video>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 10,
+          right: 10,
+          color: 'white',
+        }}>
+        <button 
+                style={{
+                  fontFamily: "'Press Start 2P', cursive",
+                  fontSize: '1rem',
+                  padding: '10px',
+                  background: '#306230',
+                  color: '#00ff00',
+                  border: '2px solid #00ff00',
+                  borderRadius: '0',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 4px 0 #0f380f',
+                  width: '100px',
+                }}
+                onClick={handleSkipVideo}
+        >Skip</button>
+      </div>
+      </div>
+    }
       <canvas
         id="gameCanvas"
         width={800}
