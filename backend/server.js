@@ -13,6 +13,19 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/CSCI31
 
 const app = express();
 
+const LICENSE_KEY = "ABC123-XYZ789";
+
+const validateLicenseKey = (req, res, next) => {
+  const clientLicenseKey = req.headers['x-license-key']; // Expect key in header
+  if (!clientLicenseKey || clientLicenseKey !== LICENSE_KEY) {
+    return res.status(403).json({
+      status: "error",
+      message: "Invalid or missing license key",
+    });
+  }
+  next(); // Proceed if key matches
+};
+
 // Middleware
 app.use(cors({
   origin: "http://localhost:3000", // Frontend origin
@@ -20,6 +33,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/api", validateLicenseKey);
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
@@ -52,10 +66,6 @@ app.get("/api/test-db", async (req, res) => {
       error: error.message 
     });
   }
-});
-
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server!" });
 });
 
 app.get("/api/sudoku/:difficulty", async (req, res) => {

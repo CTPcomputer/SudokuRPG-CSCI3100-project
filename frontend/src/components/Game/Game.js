@@ -8,6 +8,7 @@ import { defineStage3Scene } from './Gamecomponent/stage3';
 import { defineStage4Scene } from './Gamecomponent/stage4';
 import { defineWinScene } from './Gamecomponent/win'; // Import the win scene
 import {useNavigate} from 'react-router-dom';
+import {LICENSE_KEY} from '../License/license.js';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -260,6 +261,7 @@ const Game = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-License-Key': LICENSE_KEY,
         },
         body: JSON.stringify({
           email,

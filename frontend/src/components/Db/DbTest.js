@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {LICENSE_KEY} from "../License/license.js";
 
 const DbTest = () => {
   const [dbStatus, setDbStatus] = useState(null);
@@ -9,7 +10,15 @@ const DbTest = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:3001/api/test-db');
+      const response = await fetch('http://localhost:3001/api/test-db',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-License-Key': LICENSE_KEY
+          },
+        }
+      );
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       setDbStatus(data);

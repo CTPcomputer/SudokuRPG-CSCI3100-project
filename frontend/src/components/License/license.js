@@ -1,0 +1,1 @@
+export const LICENSE_KEY = "ABC123-XYZ789";
