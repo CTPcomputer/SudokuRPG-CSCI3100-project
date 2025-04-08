@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LICENSE_KEY } from '../License/license.js';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Signup = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-License-Key': LICENSE_KEY,
       },
       body: JSON.stringify({ email, password }),
     })
