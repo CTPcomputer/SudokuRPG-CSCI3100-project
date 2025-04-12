@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Import the font if not already in your project (e.g., via CSS or a link in index.html)
-// Add this to your index.html: <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+import {LICENSE_KEY} from "../License/license.js";
 
 const Leaderboard = () => {
   const navigate = useNavigate();
@@ -23,7 +21,15 @@ const Leaderboard = () => {
 
   const fetchRankings = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/rankings');
+      const response = await fetch('http://localhost:3001/api/rankings',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-License-Key': LICENSE_KEY,
+          },
+        }
+      );
       const result = await response.json();
       if (result.status === 'success') {
         setRankings(result.data);

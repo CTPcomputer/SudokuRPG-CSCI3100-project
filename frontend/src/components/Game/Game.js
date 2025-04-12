@@ -8,6 +8,7 @@ import { defineStage3Scene } from './Gamecomponent/stage3';
 import { defineStage4Scene } from './Gamecomponent/stage4';
 import { defineWinScene } from './Gamecomponent/win'; // Import the win scene
 import {useNavigate} from 'react-router-dom';
+import {LICENSE_KEY} from '../License/license.js';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Game = () => {
   const [videoSource, setVideoSource] = useState("videos/open.mp4")
   const [recordMessage, setRecordMessage] = useState("");
   const bgMusicRef = useRef(null)
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   //disable player movement when video is playing
   const showVideoRef = useRef(showVideo);
@@ -90,28 +92,37 @@ const Game = () => {
       anims: { idle: { from: 0, to: 1, loop: true, duration: 100 } },
     });
     k.current.loadSound("bg", "sounds/testbg.mp3");
-    k.current.loadSprite("prototype", "sprites/Player.png", {
-      sliceX: 3,
-      sliceY: 4,
+    k.current.loadSprite("cat", "sprites/cat.png", {
+      sliceX: 8,
+      sliceY: 10,
       anims: {
-        idie: { from: 0, to: 0, loop: true },
-        walkup: { from: 3, to: 5, loop: false },
-        stopup: { from: 3, to: 3, loop: false },
-        walkdown: { from: 0, to: 2, loop: false },
-        stopdown: { from: 0, to: 0, loop: false },
-        walkright: { from: 6, to: 8, loop: false },
-        stopright: { from: 6, to: 6, loop: false },
-        walkleft: { from: 9, to: 11, loop: false, flipX: true },
-        stopleft: { from: 9, to: 9, loop: false, flipX: true },
-      },
-    });
+        sit1: { from: 0, to: 3, loop: true, duration: 100 },
+        sit2: { from: 8, to: 11, loop: true, duration: 100 },
+        lick1: { from: 16 , to: 19, loop: true, duration: 100 },
+        lick2: { from: 24, to: 27, loop: true, duration: 100 },
+      }});
 
+      k.current.loadSprite("prototype", "sprites/Player.png", {
+        sliceX: 3,
+        sliceY: 4,
+        anims: {
+          idie: { from: 0, to: 0, loop: true },
+          walkup: { from: 3, to: 5, loop: false },
+          stopup: { from: 3, to: 3, loop: false },
+          walkdown: { from: 0, to: 2, loop: false },
+          stopdown: { from: 0, to: 0, loop: false },
+          walkright: { from: 6, to: 8, loop: false },
+          stopright: { from: 6, to: 6, loop: false },
+          walkleft: { from: 9, to: 11, loop: false, flipX: true },
+          stopleft: { from: 9, to: 9, loop: false, flipX: true },
+        },
+      });
     const player = k.current.make([
       k.current.sprite("prototype", { frame: 0 }),
       k.current.scale(2),
       k.current.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2),
       k.current.health(4),
-      k.current.area({ scale: 0.5 }),
+      k.current.area({ scale: 0.8 }),
       k.current.body(),
       k.current.anchor("center"),
       "player",
@@ -213,7 +224,12 @@ const Game = () => {
 
     // Start the game
     k.current.go("stage1", 1);
-    bgMusicRef.current = k.current.play("bg", { volume: 0.5, loop: true });
+    bgMusicRef.current = k.current.play("bg", 
+      { 
+        volume: 0.5,
+        loop: true 
+      }
+    );
 
 
     const resizeCanvas = () => {
@@ -251,6 +267,7 @@ const Game = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-License-Key': LICENSE_KEY,
         },
         body: JSON.stringify({
           email,
@@ -309,6 +326,13 @@ const Game = () => {
 
   };
 
+  useEffect(() => {
+    const savedSound = localStorage.getItem('sound');
+    if (savedSound !== null) {
+      setSoundEnabled(JSON.parse(savedSound));
+    }
+  }, []);
+
 
   // Control music based on showVideo state
   useEffect(() => {
@@ -320,6 +344,16 @@ const Game = () => {
       }
     }
   }, [showVideo]);
+
+  useEffect(() => {
+    if (bgMusicRef.current) {
+      if (!soundEnabled) {
+        bgMusicRef.current.volume=0; // Mute music
+      } else {
+        bgMusicRef.current.volume=0.5; // Unmute music
+      }
+    }
+  }, [soundEnabled]);
 
 // Handle video playback and navigation
 useEffect(() => {
@@ -379,6 +413,7 @@ const handleSkipVideo = () => {
         <video
             ref={videoRef}
             autoPlay
+            muted={!soundEnabled}
             style={{
               width: "95%",
               height: "95%",

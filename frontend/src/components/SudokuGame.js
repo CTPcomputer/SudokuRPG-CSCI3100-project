@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LICENSE_KEY } from './License/license.js';
 
 const SudokuGame = ({ onComplete,stage }) => {
   const [board, setBoard] = useState(Array(9).fill().map(() => Array(9).fill(0)));
@@ -36,7 +37,15 @@ const SudokuGame = ({ onComplete,stage }) => {
 
   const fetchPuzzle = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/sudoku/${difficulty}`);
+      const response = await fetch(`http://localhost:3001/api/sudoku/${difficulty}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-License-Key': LICENSE_KEY,
+          },
+        }
+      );
       const result = await response.json();
       if (result.status === 'success') {
         setBoard(JSON.parse(JSON.stringify(result.data.puzzle)));
@@ -163,6 +172,7 @@ const SudokuGame = ({ onComplete,stage }) => {
   };
 
   const showSolution = () => {
+    if (gameStatus !== 'playing') return;
     setBoard(JSON.parse(JSON.stringify(solution)));
     setGameStatus('solved');
     setMessage('Here is the solution!');
