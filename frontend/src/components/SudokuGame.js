@@ -172,6 +172,7 @@ const SudokuGame = ({ onComplete,stage }) => {
   };
 
   const showSolution = () => {
+    if (gameStatus !== 'playing') return;
     setBoard(JSON.parse(JSON.stringify(solution)));
     setGameStatus('solved');
     setMessage('Here is the solution!');
