@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 // Game Boy style colors
 const colors = {
-  background: '#0f380f', // Settings background
+  background: '#0f380f',
   header: '#8bac0f',
   text: '#8bac0f',
   inputBackground: '#306230',
   buttonBackground: '#306230',
   buttonHover: '#306230',
   buttonCancel: '#306230',
-  fullscreenBackground: '#306230', // Fullscreen background color
+  fullscreenBackground: '#306230',
 };
 
 const Settings = () => {
@@ -19,22 +19,36 @@ const Settings = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [timeLimit, setTimeLimit] = useState(300);
 
-    useEffect(() => {
-      let currentuser = localStorage.getItem('user');
-      if (currentuser === null) {
-        navigate('/login');
-      }
-    }, []);
+  // Check login status
+  useEffect(() => {
+    let currentuser = localStorage.getItem('user');
+    if (currentuser === null) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
-  // Set fullscreen background color on mount
+  // Set fullscreen background color
   useEffect(() => {
     document.body.style.backgroundColor = colors.fullscreenBackground;
-    
-    // Cleanup function to reset background color
     return () => {
       document.body.style.backgroundColor = '';
     };
   }, []);
+
+  // Load saved sound setting on mount
+  useEffect(() => {
+    const savedSound = localStorage.getItem('sound');
+    if (savedSound !== null) {
+      setSoundEnabled(JSON.parse(savedSound));
+    }
+  }, []);
+
+  // Handle Save & Return
+  const handleSave = () => {
+    localStorage.setItem('sound', JSON.stringify(soundEnabled));
+    console.log('Sound setting saved:', soundEnabled);
+    navigate('/home');
+  };
 
   return (
     <div style={{
@@ -43,7 +57,7 @@ const Settings = () => {
       margin: '0 auto',
       backgroundColor: colors.background,
       color: colors.text,
-      fontFamily: '"Press Start 2P", cursive', // Pixel font
+      fontFamily: '"Press Start 2P", cursive',
       fontSize: '16px',
       borderRadius: '10px',
     }}>
@@ -109,7 +123,7 @@ const Settings = () => {
 
       <div style={{ display: 'flex', gap: '15px' }}>
         <button
-          onClick={() => navigate('/home')}
+          onClick={handleSave}
           style={{
             padding: '15px 30px',
             fontSize: '1.2rem',

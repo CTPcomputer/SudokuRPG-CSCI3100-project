@@ -23,6 +23,7 @@ const Game = () => {
   const [videoSource, setVideoSource] = useState("videos/open.mp4")
   const [recordMessage, setRecordMessage] = useState("");
   const bgMusicRef = useRef(null)
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   //disable player movement when video is playing
   const showVideoRef = useRef(showVideo);
@@ -223,7 +224,12 @@ const Game = () => {
 
     // Start the game
     k.current.go("stage1", 1);
-    bgMusicRef.current = k.current.play("bg", { volume: 0.5, loop: true });
+    bgMusicRef.current = k.current.play("bg", 
+      { 
+        volume: 0.5,
+        loop: true 
+      }
+    );
 
 
     const resizeCanvas = () => {
@@ -320,6 +326,13 @@ const Game = () => {
 
   };
 
+  useEffect(() => {
+    const savedSound = localStorage.getItem('sound');
+    if (savedSound !== null) {
+      setSoundEnabled(JSON.parse(savedSound));
+    }
+  }, []);
+
 
   // Control music based on showVideo state
   useEffect(() => {
@@ -331,6 +344,16 @@ const Game = () => {
       }
     }
   }, [showVideo]);
+
+  useEffect(() => {
+    if (bgMusicRef.current) {
+      if (!soundEnabled) {
+        bgMusicRef.current.volume=0; // Mute music
+      } else {
+        bgMusicRef.current.volume=0.5; // Unmute music
+      }
+    }
+  }, [soundEnabled]);
 
 // Handle video playback and navigation
 useEffect(() => {
@@ -390,6 +413,7 @@ const handleSkipVideo = () => {
         <video
             ref={videoRef}
             autoPlay
+            muted={!soundEnabled}
             style={{
               width: "95%",
               height: "95%",
