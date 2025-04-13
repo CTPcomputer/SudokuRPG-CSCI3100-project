@@ -100,6 +100,7 @@ const Game = () => {
         sit2: { from: 8, to: 11, loop: true, duration: 100 },
         lick1: { from: 16 , to: 19, loop: true, duration: 100 },
         lick2: { from: 24, to: 27, loop: true, duration: 100 },
+        sleep1: { from: 48, to: 51, loop: true, duration: 100 },
       }});
 
       k.current.loadSprite("prototype", "sprites/Player.png", {
