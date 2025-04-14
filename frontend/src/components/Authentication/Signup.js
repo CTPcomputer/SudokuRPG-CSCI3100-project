@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LICENSE_KEY } from '../License/license.js';
+import Modal from './Modal'; // Import Modal
 
 const Signup = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [modal, setModal] = useState({ isOpen: false, message: '', type: 'success' });
 
   const signup = (email, password) => {
     fetch('http://localhost:3001/api/signup', {
@@ -20,21 +22,21 @@ const Signup = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'error') {
-          alert(data.message);
+          setModal({ isOpen: true, message: data.message, type: 'error' });
         } else {
-          alert(data.message);
-          navigate('/login');
+          setModal({ isOpen: true, message: data.message, type: 'success', navigateTo: '/login' });
         }
       })
       .catch((error) => {
         console.error('Error:', error);
+        setModal({ isOpen: true, message: 'An error occurred. Please try again.', type: 'error' });
       });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      setModal({ isOpen: true, message: 'Passwords do not match', type: 'error' });
       return;
     }
     signup(email, password);
@@ -52,17 +54,17 @@ const Signup = () => {
         height: '100vh',
         width: '100vw',
         padding: '20px',
-        background: '#0f380f', // Game Boy Color background
-        color: '#00ff00', // Neon green text
+        background: '#0f380f',
+        color: '#00ff00',
         boxSizing: 'border-box',
         margin: 0,
         overflow: 'hidden',
-        fontFamily: "'Press Start 2P', cursive", // Game Boy style font
+        fontFamily: "'Press Start 2P', cursive",
       }}
     >
       <h2
         style={{
-          fontSize: 'clamp(1.5rem, 6vw, 3rem)', // Responsive font size
+          fontSize: 'clamp(1.5rem, 6vw, 3rem)',
           marginBottom: '2rem',
           color: '#00ff00',
           textShadow:
@@ -81,7 +83,7 @@ const Signup = () => {
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem',
-          width: 'clamp(200px, 80%, 400px)', // Responsive width
+          width: 'clamp(200px, 80%, 400px)',
           maxWidth: '100%',
         }}
       >
@@ -110,7 +112,7 @@ const Signup = () => {
             style={{
               padding: 'clamp(8px, 2vw, 12px)',
               fontSize: 'clamp(0.8rem, 2vw, 1rem)',
-              background: '#306230', // Same background as buttons
+              background: '#306230',
               color: '#00ff00',
               border: '2px solid #00ff00',
               borderRadius: '0',
@@ -144,7 +146,7 @@ const Signup = () => {
             required
             style={{
               padding: 'clamp(8px, 2vw, 12px)',
-              fontSize: 'clamp(0.8rem, 2vw, 1rem)',
+              fontSize: 'clamp0.8rem, 2vw, 1rem)',
               background: '#306230',
               color: '#00ff00',
               border: '2px solid #00ff00',
@@ -195,7 +197,7 @@ const Signup = () => {
           style={{
             padding: 'clamp(10px, 3vw, 20px) clamp(20px, 5vw, 40px)',
             fontSize: 'clamp(1rem, 3vw, 1.5rem)',
-            background: '#306230', // Button background
+            background: '#306230',
             color: '#00ff00',
             border: '2px solid #00ff00',
             borderRadius: '0',
@@ -216,6 +218,14 @@ const Signup = () => {
           Sign Up
         </button>
       </form>
+
+      <Modal
+        isOpen={modal.isOpen}
+        message={modal.message}
+        type={modal.type}
+        onClose={() => setModal({ ...modal, isOpen: false })}
+        navigateTo={modal.navigateTo}
+      />
     </div>
   );
 };
