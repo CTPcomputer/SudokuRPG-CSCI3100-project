@@ -60,6 +60,7 @@ const Settings = () => {
       fontFamily: '"Press Start 2P", cursive',
       fontSize: '16px',
       borderRadius: '10px',
+      marginTop: '25vh',
     }}>
       <h1 style={{ marginBottom: '30px', color: colors.header }}>Settings</h1>
 

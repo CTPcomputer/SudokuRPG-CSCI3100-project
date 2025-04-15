@@ -30,7 +30,6 @@ return (
      color: '#0f370f',
      boxSizing: 'border-box',
      margin: 0,
-     overflow: 'hidden',
      fontFamily: "'Press Start 2P', cursive", // Game Boy style font
       overflowY: 'auto',
    }}>
