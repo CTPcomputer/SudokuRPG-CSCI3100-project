@@ -41,7 +41,6 @@ const Signup = () => {
     }
     signup(email, password);
     console.log('Email:', email);
-    console.log('Password:', password);
   };
 
   return (
