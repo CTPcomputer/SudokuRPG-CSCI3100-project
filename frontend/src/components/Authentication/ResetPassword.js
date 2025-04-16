@@ -1,41 +1,40 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { LICENSE_KEY } from '../License/license.js';
 import Modal from './Modal';
 
-const Signup = () => {
+const ResetPassword = () => {
+  const { token } = useParams();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [modal, setModal] = useState({ isOpen: false, message: '', type: 'success' });
 
-  const signup = (email, password) => {
-    fetch('http://localhost:3001/api/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-License-Key': LICENSE_KEY,
-      },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === 'error') {
-          setModal({ isOpen: true, message: data.message, type: 'error' });
-        } else {
-          setModal({
-            isOpen: true,
-            message: 'Signup successful! Please check your email to verify your account.',
-            type: 'success',
-            navigateTo: '/login',
-          });
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        setModal({ isOpen: true, message: 'An error occurred. Please try again.', type: 'error' });
+  const resetPassword = async (token, password) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-License-Key': LICENSE_KEY,
+        },
+        body: JSON.stringify({ token, password }),
       });
+      const data = await response.json();
+      if (data.status === 'error') {
+        setModal({ isOpen: true, message: data.message, type: 'error' });
+      } else {
+        setModal({
+          isOpen: true,
+          message: 'Password reset successfully! You can now log in.',
+          type: 'success',
+          navigateTo: '/login',
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setModal({ isOpen: true, message: 'An error occurred. Please try again.', type: 'error' });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -44,8 +43,7 @@ const Signup = () => {
       setModal({ isOpen: true, message: 'Passwords do not match', type: 'error' });
       return;
     }
-    signup(email, password);
-    console.log('Email:', email);
+    resetPassword(token, password);
   };
 
   return (
@@ -78,7 +76,7 @@ const Signup = () => {
           textAlign: 'center',
         }}
       >
-        Sign Up
+        Reset Password
       </h2>
 
       <form
@@ -99,48 +97,13 @@ const Signup = () => {
           }}
         >
           <label
-            htmlFor="email"
-            style={{
-              fontSize: 'clamp(0.8rem, 2vw, 1rem)',
-              color: '#00ff00',
-            }}
-          >
-            Email:
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{
-              padding: 'clamp(8px, 2vw, 12px)',
-              fontSize: 'clamp(0.8rem, 2vw, 1rem)',
-              background: '#306230',
-              color: '#00ff00',
-              border: '2px solid #00ff00',
-              borderRadius: '0',
-              fontFamily: "'Press Start 2P', cursive",
-              outline: 'none',
-            }}
-          />
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-          }}
-        >
-          <label
             htmlFor="password"
             style={{
               fontSize: 'clamp(0.8rem, 2vw, 1rem)',
               color: '#00ff00',
             }}
           >
-            Password:
+            New Password:
           </label>
           <input
             type="password"
@@ -219,7 +182,7 @@ const Signup = () => {
             e.currentTarget.style.boxShadow = '0 4px 0 #006600';
           }}
         >
-          Sign Up
+          Reset Password
         </button>
       </form>
 
@@ -234,4 +197,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default ResetPassword;

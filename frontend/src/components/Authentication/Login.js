@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LICENSE_KEY } from '../License/license.js';
-import Modal from './Modal'; // Import Modal
+import Modal from './Modal';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Login = () => {
           setModal({ isOpen: true, message: data.message, type: 'error' });
         } else {
           localStorage.setItem('user', JSON.stringify(data.user));
-          setModal({ isOpen: true, message: data.message, type: 'success' , navigateTo: '/home' });
+          setModal({ isOpen: true, message: data.message, type: 'success', navigateTo: '/home' });
         }
       })
       .catch((error) => {
@@ -203,6 +203,30 @@ const Login = () => {
         >
           Signup
         </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/forgot-password')}
+          style={{
+            padding: 'clamp(10px, 3vw, 20px) clamp(20px, 5vw, 40px)',
+            fontSize: 'clamp(0.8rem, 2vw, 1rem)',
+            background: 'transparent',
+            color: '#00ff00',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            fontFamily: "'Press Start 2P', cursive",
+            textDecoration: 'underline',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.color = '#8bac0f';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.color = '#00ff00';
+          }}
+        >
+          Forgot Password?
+        </button>
       </form>
 
       <Modal
@@ -210,7 +234,7 @@ const Login = () => {
         message={modal.message}
         type={modal.type}
         onClose={() => setModal({ ...modal, isOpen: false })}
-        navigateTo={modal.navigateTo} // Pass navigateTo prop to Modal
+        navigateTo={modal.navigateTo}
       />
     </div>
   );
