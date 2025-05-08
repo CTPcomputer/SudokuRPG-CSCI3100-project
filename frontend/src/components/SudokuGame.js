@@ -1,108 +1,5 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LICENSE_KEY } from './License/license.js';
-
-
-
-const CustomDropdown = ({ value, onChange, options }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Handle keyboard navigation
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      setIsOpen((prev) => !prev);
-      event.preventDefault();
-    } else if (event.key === 'Escape') {
-      setIsOpen(false);
-    }
-  };
-
-  return (
-    <div
-      ref={dropdownRef}
-      style={{
-        position: 'relative',
-        width: '120px',
-        fontFamily: 'Silkscreen',
-        fontSize: '16px',
-      }}
-    >
-      <div
-        onClick={() => setIsOpen((prev) => !prev)}
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
-        style={{
-          padding: '10px',
-          height: '40px',
-          background: '#8bac0f',
-          color: '#0f380f',
-          border: '2px solid #444',
-          borderRadius: '0',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          textTransform: 'capitalize',
-          transition: 'background-color 0.3s',
-          outline: 'none',
-        }}
-        onMouseEnter={(e) => (e.target.style.background = '#9bbc0f')}
-        onMouseLeave={(e) => (e.target.style.background = '#8bac0f')}
-      >
-        <span>{value}</span>
-        <span style={{ marginLeft: '5px' }}>▼</span>
-      </div>
-      {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '48px', // Below the dropdown button
-            left: '0',
-            width: '100%',
-            background: '#8bac0f',
-            border: '2px solid #444',
-            borderRadius: '0',
-            zIndex: 10,
-            boxShadow: '0 4px 8px rgba(0,0,0,0.3)', // Subtle shadow for depth
-          }}
-        >
-          {options.map((option) => (
-            <div
-              key={option.value}
-              onClick={() => {
-                onChange(option.value);
-                setIsOpen(false);
-              }}
-              style={{
-                padding: '10px',
-                color: '#0f380f',
-                cursor: 'pointer',
-                textTransform: 'capitalize',
-                transition: 'background-color 0.3s',
-              }}
-              onMouseEnter={(e) => (e.target.style.background = '#9bbc0f')}
-              onMouseLeave={(e) => (e.target.style.background = '#8bac0f')}
-            >
-              {option.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
 
 const SudokuGame = ({ onComplete,stage }) => {
   const [board, setBoard] = useState(Array(9).fill().map(() => Array(9).fill(0)));
@@ -120,7 +17,6 @@ const SudokuGame = ({ onComplete,stage }) => {
   useEffect(() => {
     fetchPuzzle();
   }, [difficulty]);
-  
 
   useEffect(() => {
     if (gameStatus === 'playing') {
@@ -299,12 +195,6 @@ const SudokuGame = ({ onComplete,stage }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const difficultyOptions = [
-    { value: 'easy', label: 'Easy' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'hard', label: 'Hard' },
-  ];
-
   // Rest of your JSX remains largely the same, just adding difficulty selection
   return (
     <div style={{ 
@@ -345,11 +235,23 @@ const SudokuGame = ({ onComplete,stage }) => {
         }}>
           Time Left: {formatTime(timeLeft)}
         </div>
-        <CustomDropdown
+        <select
           value={difficulty}
-          onChange={setDifficulty}
-          options={difficultyOptions}
-        />
+          onChange={(e) => setDifficulty(e.target.value)}
+          style={{
+            padding: '10px',
+            fontSize: '16px',
+            fontFamily: 'Silkscreen',
+            background: '#8bac0f',
+            color: '#0f380f',
+            border: '2px solid #444',
+            borderRadius: '0',
+          }}
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
       </div>
 
       {/* Rest of your grid and button JSX remains the same */}

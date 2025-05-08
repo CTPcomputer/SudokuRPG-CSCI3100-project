@@ -1,45 +1,29 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-
+const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     unique: true,
-    trim: true,
+    trim: true
   },
   password: {
     type: String,
-    required: true,
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-  verificationToken: {
-    type: String,
-  },
-  verificationTokenExpires: {
-    type: Date,
-  },
-  resetPasswordToken: {
-    type: String, // Token for password reset
-  },
-  resetPasswordExpires: {
-    type: Date, // Expiry time for reset token
-  },
+    required: true
+  }
 }, {
-  timestamps: true,
+  timestamps: true
 });
 
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
+userSchema.pre("save", async function(next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10); // 10 is salt rounds
   }
   next();
 });
 
-userSchema.methods.comparePassword = async function (candidatePassword) {
+// Compare password method
+userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

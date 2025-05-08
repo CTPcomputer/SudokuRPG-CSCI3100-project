@@ -60,14 +60,53 @@ const Settings = () => {
       fontFamily: '"Press Start 2P", cursive',
       fontSize: '16px',
       borderRadius: '10px',
-      marginTop: '25vh',
     }}>
       <h1 style={{ marginBottom: '30px', color: colors.header }}>Settings</h1>
 
       <div style={{ marginBottom: '30px' }}>
         <h2 style={{ color: colors.header, marginBottom: '15px' }}>Game Settings</h2>
         
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '10px' }}>Difficulty:</label>
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+            style={{
+              padding: '10px',
+              width: '200px',
+              borderRadius: '5px',
+              border: '1px solid #444',
+              background: colors.inputBackground,
+              color: colors.text,
+              fontFamily: 'inherit',
+            }}
+          >
+            <option value="easy">Easy</option>
+            <option value="normal">Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
 
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '10px' }}>Time Limit (seconds):</label>
+          <input
+            type="number"
+            value={timeLimit}
+            onChange={(e) => setTimeLimit(Number(e.target.value))}
+            min="60"
+            max="600"
+            step="30"
+            style={{
+              padding: '10px',
+              width: '180px',
+              borderRadius: '5px',
+              border: '1px solid #444',
+              background: colors.inputBackground,
+              color: colors.text,
+              fontFamily: 'inherit',
+            }}
+          />
+        </div>
 
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>

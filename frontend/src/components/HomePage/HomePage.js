@@ -30,6 +30,7 @@ return (
      color: '#0f370f',
      boxSizing: 'border-box',
      margin: 0,
+     overflow: 'hidden',
      fontFamily: "'Press Start 2P', cursive", // Game Boy style font
       overflowY: 'auto',
    }}>
@@ -40,7 +41,7 @@ return (
        color: '#00ff00',
        textShadow: '2px 2px 0 #8bac0f, -2px -2px 0 #8bac0f, 2px -2px 0 #8bac0f, -2px 2px 0 #8bac0f',
        letterSpacing: '2px',
-       lineHeight: '1.5',
+       lineHeight: '1.2',
        textAlign: 'center'
 }}>
 Sudoku RPG Adventure
