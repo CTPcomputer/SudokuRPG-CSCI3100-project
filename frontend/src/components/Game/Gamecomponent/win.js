@@ -4,6 +4,7 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
     const BASE_WIDTH = 160;
     const BASE_HEIGHT = 144;
     
+    console.log(recordMessage)
     k.scene("win", () => {
       k.add([
         k.text("Game Over!", { size: 16 }),
@@ -26,6 +27,7 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
 
     // Display record message if available
     if (recordMessage) {
+      console.log(recordMessage)
       k.add([
         k.text(recordMessage, { size: 12 }),
         k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2+10),

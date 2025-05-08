@@ -256,7 +256,7 @@ const Game = () => {
 
   const recordTotalTime = async () => {
     console.log("Recording total time:", totalTime);
-    const user = localStorage.getItem('user'); // Adjust based on your auth setup
+    const user = localStorage.getItem('user');
     const email = user ? JSON.parse(user).email : null;
     if (!email) {
       console.error('No user email found');
@@ -280,7 +280,10 @@ const Game = () => {
         console.error('Failed to record total time:', result.message);
       } else {
         console.log(result.message);
-        setRecordMessage(result.message)
+        setRecordMessage(result.message);
+        // Redefine win scene after record message is set
+        defineWinScene(kRef.current, setShowSudoku, totalTime, result.message);
+        kRef.current.go("win");
       }
     } catch (error) {
       console.error('Error recording total time:', error);
@@ -310,21 +313,24 @@ const Game = () => {
       stagenum.current += 1;
       let nextstage = stagelist[currentIndex + 1];
       if (nextstage === "win") {
-        kRef.current.go("win");
         setShowVideo(true);
         if (localStorage.getItem('cheat')==='false'){
           setVideoSource("videos/true.mp4");
-          recordTotalTime();
+          // Only define win scene here for cheat ending
+          defineWinScene(kRef.current, setShowSudoku, totalTime, '');
+          kRef.current.go("win");
+          recordTotalTime(); // This will redefine win scene with record message
         }
         else{
           setVideoSource("videos/cheat.mp4");
+          defineWinScene(kRef.current, setShowSudoku, 0, 'Cheat no record.');
+          kRef.current.go("win");
         }
       }
       else{
-      kRef.current.go(nextstage, stagenum.current);
+        kRef.current.go(nextstage, stagenum.current);
       }
       if (canvasRef.current) canvasRef.current.focus();
-
   };
 
   useEffect(() => {
