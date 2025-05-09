@@ -29,7 +29,7 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
     if (recordMessage) {
       console.log(recordMessage)
       k.add([
-        k.text(recordMessage, { size: 12 }),
+        k.text(recordMessage, { size: 12,width:BASE_WIDTH-10 }),
         k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2+10),
         k.anchor("center"),
         k.layer("ui"),
