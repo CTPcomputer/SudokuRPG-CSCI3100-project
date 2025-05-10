@@ -8,7 +8,7 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
     k.scene("win", () => {
       k.add([
         k.text("Game Over!", { size: 16 }),
-        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2 - 20),
+        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2 - 40),
         k.anchor("center"),
         k.layer("ui"),
       ]);
@@ -19,7 +19,7 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
       const currentTimeText = `Total time: ${Math.floor(totalTime / 60)}:${(totalTime % 60).toString().padStart(2, '0')}`;
       k.add([
         k.text(currentTimeText, { size: 12 }),
-        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2),
+        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2-25),
         k.anchor("center"),
         k.layer("ui"),
       ]);
@@ -29,8 +29,8 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
     if (recordMessage) {
       console.log(recordMessage)
       k.add([
-        k.text(recordMessage, { size: 12,width:BASE_WIDTH-10 }),
-        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2+10),
+        k.text(recordMessage, { size: 12,width:BASE_WIDTH-25 }),
+        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2),
         k.anchor("center"),
         k.layer("ui"),
       ]);
@@ -38,7 +38,7 @@ export const defineWinScene = (k, setShowSudoku,totalTime, recordMessage) => {
   
       k.add([
         k.text("Press R to Replay", { size: 12 }),
-        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2 + 20),
+        k.pos(BASE_WIDTH / 2, BASE_HEIGHT / 2 + 30),
         k.anchor("center"),
         k.layer("ui"),
       ]);
