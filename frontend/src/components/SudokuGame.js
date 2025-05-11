@@ -317,10 +317,12 @@ const SudokuGame = ({ onComplete,stage }) => {
       alignItems: 'center',
       overflow: 'hidden'
     }}>
-      <button
+    {/*Test lose button for debugging
+    <button
       onClick={handleBattleLoss}>
         <p>test lose</p>
       </button>
+    */}
       <div style={{ 
         color: 'white', 
         fontSize: '24px', 

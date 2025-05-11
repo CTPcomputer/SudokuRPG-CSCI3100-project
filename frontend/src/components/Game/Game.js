@@ -513,10 +513,11 @@ const handleSkipVideo = () => {
             borderRadius: '10px',
             overflow: 'hidden',
           }}>
+          {/*Test next stage button for debugging
           <button onClick={tonextstage} style={{
               position: 'absolute',
               top: '5%',
-            }}>Test next stage</button>
+            }}>Test next stage</button>*/}
             <SudokuGame onComplete={handleSudokuComplete} stage={stagenum.current}/>
           </div>
         </div>
